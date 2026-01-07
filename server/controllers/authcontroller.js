@@ -55,12 +55,14 @@ export const register = async (req, res) => {
     });
 
     // Kirim OTP ke email
-    await transporter.sendMail({
+      transporter.sendMail({
       from: process.env.SENDER_EMAIL,
       to: email,
       subject: 'Verify your KAVES account',
       text: `Your verification OTP is: ${otp}`,
-    });
+    }).catch(err => {
+  console.error('Email error:', err.message);
+});
 
     return res.json({
       success: true,
@@ -105,12 +107,12 @@ export const login = async (req, res) => {
       user.verifyOtpExpireAt = Date.now() + 24 * 60 * 60 * 1000;
       await user.save();
 
-      await transporter.sendMail({
+        transporter.sendMail({
         from: process.env.SENDER_EMAIL,
         to: user.email,
         subject: 'Verify your KAVES account',
         text: `Your OTP is ${otp}. Please verify your email.`,
-      });
+      }).catch(console.error);
 
       return res.json({
         success: true,
@@ -173,12 +175,12 @@ export const sendVerifyOtp = async (req, res) => {
     user.verifyOtpExpireAt = Date.now() + 24 * 60 * 60 * 1000;
     await user.save();
 
-    await transporter.sendMail({
+      transporter.sendMail({
       from: process.env.SENDER_EMAIL,
       to: user.email,
       subject: "Account Verification OTP",
       text: `Your OTP is ${otp}. Verify your account using this OTP.`,
-    });
+    }).catch(console.error);
 
     return res.json({ success: true, message: "OTP sent again to your email" });
   } catch (error) {
@@ -248,8 +250,8 @@ export const sendResetOtp = async (req, res) => {
       text: `Your OTP is ${otp}. Use this OTP within 15 minutes to reset your password.`,
     };
 
-    await transporter.sendMail(mailOption);
-    return res.json({ success: true, message: 'OTP sent to your email' });
+    transporter.sendMail(mailOption);
+    return res.json({ success: true, message: 'OTP sent to your email' }).catch(console.error);
 
   } catch (error) {
     return res.json({ success: false, message: error.message });

@@ -3,12 +3,12 @@ import cors from "cors";
 import 'dotenv/config';
 import cookieParser from "cookie-parser";
 import connectDB from "./config/mongodb.js";
-import authRouter from "./routes/authRoutes.js";
-import userRouter from "./routes/userRoutes.js";
-import ruangKerjaRoutes from "./routes/ruangKerjaRoutes.js";
-import bangunanRoutes from "./routes/bangunanRoutes.js";
-import asesmenRoutes from "./routes/asesmenRoutes.js";
-import laporanKecelakaanRoutes from "./routes/laporanKecelakaanRoutes.js";
+import authRouter from "./routes/authroutes.js";
+import userRouter from "./routes/userroutes.js";
+import ruangKerjaRoutes from "./routes/ruangkerjaroutes.js";
+import bangunanRoutes from "./routes/bangunanroutes.js";
+import asesmenRoutes from "./routes/asesmenroutes.js";
+import laporanKecelakaanRoutes from "./routes/laporankecelakaanroutes.js";
 
 
 const app = express();

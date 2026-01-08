@@ -1,15 +1,23 @@
-import nodemailer from "nodemailer";
+import fetch from "node-fetch";
 
-const transporter = nodemailer.createTransport({
-  host: "smtp-relay.brevo.com",
-  port: 587,
-  secure: false, // WAJIB false untuk port 587
-  auth: {
-    user: process.env.SMTP_USER, // 98b629001@smtp-brevo.com
-    pass: process.env.SMTP_PASS, // xsmtpsib-xxxx
-  },
-  connectionTimeout: 10000, // biar gak loading abadi
-  greetingTimeout: 10000,
-});
+export const sendEmail = async ({ to, subject, text }) => {
+  const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      "content-type": "application/json",
+      "api-key": process.env.BREVO_API_KEY,
+    },
+    body: JSON.stringify({
+      sender: { email: process.env.SENDER_EMAIL },
+      to: [{ email: to }],
+      subject,
+      textContent: text,
+    }),
+  });
 
-export default transporter;
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error("Brevo error: " + err);
+  }
+};

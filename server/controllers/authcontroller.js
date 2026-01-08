@@ -2,7 +2,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import userModel from '../models/usermodel.js';
-import transporter from '../config/nodemailer.js';
+import { sendEmail } from "../config/nodemailer.js";
 import RuangKerja from '../models/ruangkerja.js';
 import AnggotaRuangKerja from '../models/anggotaruangkerja.js';
 
@@ -55,13 +55,12 @@ export const register = async (req, res) => {
     });
 
     // Kirim OTP ke email
-      await sendEmail({
-  to: email,
-  subject: "Verify your KAVES account",
-  text: `Your verification OTP is: ${otp}`,
-}).catch(err => {
-  console.error('Email error:', err.message);
-});
+    await sendEmail({
+    to: email,
+    subject: "Verify your KAVES account",
+    text: `Your verification OTP is: ${otp}`,
+  });
+
 
     return res.json({
       success: true,
@@ -107,10 +106,11 @@ export const login = async (req, res) => {
       await user.save();
 
       await sendEmail({
-      to: email,
-      subject: "Verify your KAVES account",
-      text: `Your verification OTP is: ${otp}. Please verify your email.`,
-      }).catch(console.error);
+        to: user.email,
+        subject: "Verify your KAVES account",
+        text: `Your verification OTP is: ${otp}`,
+      });
+
 
 
 
@@ -249,7 +249,12 @@ export const sendResetOtp = async (req, res) => {
       text: `Your OTP is ${otp}. Use this OTP within 15 minutes to reset your password.`,
     };
 
-    await.sendMail(mailOption);
+    await sendEmail({
+      to: user.email,
+      subject: "Password Reset OTP",
+      text: `Your OTP is ${otp}. Use this OTP within 15 minutes.`,
+    });
+
     return res.json({ success: true, message: 'OTP sent to your email' }).catch(console.error);
 
   } catch (error) {
@@ -313,4 +318,5 @@ export const verifyResetOtp = async (req, res) => {
     return res.json({ success: false, message: error.message });
   }
 };
+
 

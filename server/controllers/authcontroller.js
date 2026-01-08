@@ -175,11 +175,12 @@ export const sendVerifyOtp = async (req, res) => {
     user.verifyOtpExpireAt = Date.now() + 24 * 60 * 60 * 1000;
     await user.save();
 
-      await sendEmail({
-    to: email,
-    subject: "Verify your KAVES account",
-    text: `Your verification OTP is: ${otp}. Verify your account using this OTP.`,
-    }).catch(console.error);
+    await sendEmail({
+      to: user.email,
+      subject: "Verify your KAVES account",
+      text: `Your verification OTP is: ${otp}. Verify your account using this OTP.`,
+    });
+
 
     return res.json({ success: true, message: "OTP sent again to your email" });
   } catch (error) {
@@ -318,5 +319,6 @@ export const verifyResetOtp = async (req, res) => {
     return res.json({ success: false, message: error.message });
   }
 };
+
 
 

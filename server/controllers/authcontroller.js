@@ -55,12 +55,11 @@ export const register = async (req, res) => {
     });
 
     // Kirim OTP ke email
-      transporter.sendMail({
-      from: process.env.SENDER_EMAIL,
-      to: email,
-      subject: 'Verify your KAVES account',
-      text: `Your verification OTP is: ${otp}`,
-    }).catch(err => {
+      await sendEmail({
+  to: email,
+  subject: "Verify your KAVES account",
+  text: `Your verification OTP is: ${otp}`,
+}).catch(err => {
   console.error('Email error:', err.message);
 });
 
@@ -107,12 +106,13 @@ export const login = async (req, res) => {
       user.verifyOtpExpireAt = Date.now() + 24 * 60 * 60 * 1000;
       await user.save();
 
-        transporter.sendMail({
-        from: process.env.SENDER_EMAIL,
-        to: user.email,
-        subject: 'Verify your KAVES account',
-        text: `Your OTP is ${otp}. Please verify your email.`,
+      await sendEmail({
+      to: email,
+      subject: "Verify your KAVES account",
+      text: `Your verification OTP is: ${otp}. Please verify your email.`,
       }).catch(console.error);
+
+
 
       return res.json({
         success: true,
@@ -175,11 +175,10 @@ export const sendVerifyOtp = async (req, res) => {
     user.verifyOtpExpireAt = Date.now() + 24 * 60 * 60 * 1000;
     await user.save();
 
-      transporter.sendMail({
-      from: process.env.SENDER_EMAIL,
-      to: user.email,
-      subject: "Account Verification OTP",
-      text: `Your OTP is ${otp}. Verify your account using this OTP.`,
+      await sendEmail({
+    to: email,
+    subject: "Verify your KAVES account",
+    text: `Your verification OTP is: ${otp}. Verify your account using this OTP.`,
     }).catch(console.error);
 
     return res.json({ success: true, message: "OTP sent again to your email" });
@@ -250,7 +249,7 @@ export const sendResetOtp = async (req, res) => {
       text: `Your OTP is ${otp}. Use this OTP within 15 minutes to reset your password.`,
     };
 
-    transporter.sendMail(mailOption);
+    await.sendMail(mailOption);
     return res.json({ success: true, message: 'OTP sent to your email' }).catch(console.error);
 
   } catch (error) {
@@ -314,3 +313,4 @@ export const verifyResetOtp = async (req, res) => {
     return res.json({ success: false, message: error.message });
   }
 };
+

@@ -55,11 +55,17 @@ export const register = async (req, res) => {
     });
 
     // Kirim OTP ke email
-    await sendEmail({
+    try {
+  await sendEmail({
     to: email,
     subject: "Verify your KAVES account",
     text: `Your verification OTP is: ${otp}`,
   });
+} catch (err) {
+  console.error("EMAIL FAILED:", err.message);
+  // jangan throw, jangan return
+}
+
 
 
     return res.json({
@@ -319,6 +325,7 @@ export const verifyResetOtp = async (req, res) => {
     return res.json({ success: false, message: error.message });
   }
 };
+
 
 
 
